@@ -58,6 +58,6 @@ Antes de atualizar, lê as notas da versão e faz backup. A atualização e recu
 
 O código está em `backend/` e `ui/`. Os idiomas ficam em `ui/src/locales/`. Consulta [README.md](README.md) para desenvolvimento e o roteiro. Próximas etapas: tradução completa do backend, assistente web de configuração, fornecedores de tops configuráveis e imagens de release versionadas. Esta versão não exige uma API de IA.
 
-Consulta [SECURITY.md](SECURITY.md) antes de reportar problemas. Não publiques bases de dados, música, passwords, tokens ou imagens com informação pessoal. A escolha de licença aguarda confirmação antes da primeira release pública.
+Consulta [SECURITY.md](SECURITY.md) antes de reportar problemas. Não publiques bases de dados, música, passwords, tokens ou imagens com informação pessoal. O Cadence é distribuído sob a [licença MIT](LICENSE). As dependências e serviços de terceiros mantêm as suas próprias licenças.
 
 Validação inicial: 99 testes passaram dentro do container; uma instalação Compose vazia arrancou e o login do administrador devolveu HTTP 200. A configuração das contas dos fornecedores continua manual.

@@ -81,6 +81,6 @@ Roadmap: complete backend localization, browser-based integration onboarding, co
 
 ## Security and contribution
 
-See [SECURITY.md](SECURITY.md). Do not include personal databases, music, tokens, passwords, provider responses or screenshots containing user information in issues or pull requests. Submit small changes with relevant tests. License selection is pending confirmation before the first public release.
+See [SECURITY.md](SECURITY.md). Do not include personal databases, music, tokens, passwords, provider responses or screenshots containing user information in issues or pull requests. Submit small changes with relevant tests. Cadence is licensed under the [MIT License](LICENSE). Third-party dependencies and services retain their own licenses.
 
 Initial validation: 99 backend tests passed inside the built container; a clean Compose deployment started successfully and fresh administrator sign-in returned HTTP 200. Provider account onboarding still requires manual credentials.
