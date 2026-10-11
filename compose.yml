@@ -1,0 +1,77 @@
+name: cadence
+x-app: &app
+  image: cadence:local
+  build: .
+  user: "${PUID:-1000}:${PGID:-1000}"
+  restart: unless-stopped
+  environment: &env
+    TZ: ${TZ:-UTC}
+    CADENCE_ADMIN_USER: ${CADENCE_ADMIN_USER:-admin}
+    CADENCE_ADMIN_NAME: ${CADENCE_ADMIN_NAME:-Administrator}
+    CADENCE_EMBY_PUBLIC_URL: ${CADENCE_EMBY_PUBLIC_URL:-http://localhost:8096}
+    CADENCE_SOURCE_PUBLIC_URL: ${CADENCE_SOURCE_PUBLIC_URL:-http://localhost:5030}
+  volumes: &volumes
+    - ./data/state:/var/lib/media-center
+    - ./data/media:/data/media
+    - ./data/downloads:/data/downloads
+    - ./data/temporary:/data/temporary
+    - ./data/backups:/var/backups/media-center
+    - ./data/slskd:/data/appdata/slskd
+    - ./data/emby:/data/appdata/emby
+  security_opt: ["no-new-privileges:true"]
+services:
+  init:
+    <<: *app
+    user: "0:0"
+    restart: "no"
+    command: ["python", "bootstrap.py"]
+    environment:
+      <<: *env
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+    secrets: [admin_password]
+  cadence:
+    <<: *app
+    depends_on:
+      init: {condition: service_completed_successfully}
+    ports: ["${BIND_ADDRESS:-127.0.0.1}:${CADENCE_PORT:-8787}:8787"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8787/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+  worker:
+    <<: *app
+    command: ["python", "worker.py"]
+    depends_on:
+      cadence: {condition: service_healthy}
+  emby:
+    image: emby/embyserver:4.10.1.0
+    restart: unless-stopped
+    environment:
+      UID: ${PUID:-1000}
+      GID: ${PGID:-1000}
+    volumes:
+      - ./data/emby:/config
+      - ./data/media:/media:ro
+    ports: ["${BIND_ADDRESS:-127.0.0.1}:${EMBY_PORT:-8096}:8096"]
+    depends_on:
+      init: {condition: service_completed_successfully}
+  slskd:
+    image: slskd/slskd:0.26.0
+    restart: unless-stopped
+    user: "${PUID:-1000}:${PGID:-1000}"
+    environment:
+      SLSKD_APP_DIR: /app
+    volumes:
+      - ./data/slskd:/app
+      - ./data/downloads/slskd:/downloads
+      - ./data/media/redistribution:/redistribution:ro
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${SLSKD_PORT:-5030}:5030"
+      - "${SOULSEEK_PORT:-50300}:50300"
+    depends_on:
+      init: {condition: service_completed_successfully}
+secrets:
+  admin_password:
+    file: ./.secrets/admin-password

@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+.secrets/
+data/
+node_modules/
+ui/dist/
+__pycache__/
+*.pyc
+*.sqlite*
+*.db*
+*-connection.json
+admin-password.txt
+session-key
+*.log
+.venv/

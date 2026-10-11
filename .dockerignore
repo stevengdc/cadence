@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+.secrets
+data
+**/node_modules
+**/dist
+**/__pycache__
+**/*.sqlite*
+**/*-connection.json
